@@ -68,6 +68,8 @@ chef-delivery-enterprise = terraform
 chef-delivery-public-ip = 54.148.123.123
 ```
 
+Here a gist with the ouput of the process: https://gist.github.com/afiune/fdabdbd146e564b0ed0f
+
 LICENSE AND AUTHORS
 ===================
 - Author: Salim Afiune (<afiune@chef.io>)

@@ -30,10 +30,6 @@ resource "aws_instance" "chef-server" {
 {
   "chef-server-12": {
     "api_fqdn": "${self.public_ip}",
-    "plugin": {
-      "manage": false,
-      "reporting": false
-    },
     "delivery": {
       "organization": "${var.organization}"
     }
