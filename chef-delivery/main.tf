@@ -1,7 +1,15 @@
 # Generate builder_key
 resource "null_resource" "generate_builder_key" {
+  # Currently there is no way to delay the action of reading a file,
+  # therefore we have to do this little script to delete the key and re
+  # generate it. I am trying to find a solution at this issue:
+  #
+  # https://github.com/hashicorp/terraform/issues/3354
   provisioner "local-exec" {
-    command = "ssh-keygen -t rsa -N '' -b 2048 -f .chef/builder_key -y"
+    command = <<EOF
+      rm -rf .chef/builder_key*
+      ssh-keygen -t rsa -N '' -b 2048 -f .chef/builder_key
+EOF
   }
 }
 
@@ -23,6 +31,7 @@ resource "chef_data_bag" "keys" {
 }
 
 # TODO: How to create encrypted_items?
+# Workaround: Use knife - look below at the "${template_file.delivery_builder_keys}"
 # resource "chef_data_bag_item" "delivery_builder_keys" {
 #     data_bag_name = "keys"
 #     content_json = <<EOT
@@ -59,7 +68,11 @@ resource "aws_instance" "chef-delivery" {
   #
   # Workaround: Force-delete the node before hand
   provisioner "local-exec" {
-    command = "knife node delete ${format("chef-delivery-%02d", count.index + 1)} -y | echo 'ugly'"
+    command = <<EOF
+    knife node delete ${format("chef-delivery-%02d", count.index + 1)} -y
+    knife client delete ${format("chef-delivery-%02d", count.index + 1)} -y
+    echo 'ugly'
+EOF
   }
 
   # Copies all files needed by Delivery

@@ -8,7 +8,7 @@ tags
 # Just for now we need this since Terraform is being silly with the files
 # https://github.com/hashicorp/terraform/issues/3354
 #.chef
-.chef/delivery.license
+.chef/*
 
 # You should check in your Gemfile.lock in applications, and not in gems
 # This also matches Berksfile.lock
@@ -56,5 +56,5 @@ config/
 .source.tfvars
 terraform.tfstate*
 terraform.tfvars
-.keys/
+.keys/*
 .terraform/

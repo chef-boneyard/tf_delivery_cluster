@@ -29,7 +29,7 @@ module "chef-server" {
 
 # Configure the Chef Server
 provider "chef" {
-   server_url = "${module.chef-server.chef-server-url}"
+   server_url = "${module.chef-server.chef-server-url}/"
    client_name = "delivery"
    private_key_pem = "${file(".chef/delivery.pem")}"
    allow_unverified_ssl = true

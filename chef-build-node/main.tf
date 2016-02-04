@@ -30,10 +30,11 @@ resource "aws_instance" "chef-build-node" {
   #
   # Workaround: Force-delete the node before hand
   provisioner "local-exec" {
-    command = "knife client delete ${format("chef-build-node-%02d", count.index + 1)} -y | echo 'ugly'"
-  }
-  provisioner "local-exec" {
-    command = "knife node delete ${format("chef-build-node-%02d", count.index + 1)} -y | echo 'ugly'"
+    command = <<EOF
+    knife client delete ${format("chef-build-node-%02d", count.index + 1)} -y
+    knife node delete ${format("chef-build-node-%02d", count.index + 1)} -y
+    echo 'ugly'
+EOF
   }
 
   # Copies certificates

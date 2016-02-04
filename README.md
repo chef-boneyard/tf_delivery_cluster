@@ -28,7 +28,7 @@ Follow the instructions at https://docs.chef.io/install_dk.html to install and c
 
 Downloads are here: https://www.terraform.io/downloads.html . Place in your path for direct execution.
 
-##### 4) Create and populate `terraform.tfvars`
+##### 4) Create and populate `terraform.tfvars` at the root of the repository
 
 ```
 # Terraform Variables File
@@ -37,8 +37,8 @@ aws_access_key_id = "<KEY>"
 aws_secret_access_key = "<SECRET>"
 aws_default_region = "us-west-2"
 aws_key_pair_name = "<KEY-PAIR-NAME>"
-chef-delivery-enterprise = "<ENTERPRISE-NAME>"
-chef-server-organization = "<ORGANIZATION-NAME>"
+chef-delivery-enterprise = "terraform"
+chef-server-organization = "terraform"
 ```
 
 ##### 5) Store your key-pair pem file inside `.keys/`
