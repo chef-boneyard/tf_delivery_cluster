@@ -1,0 +1,189 @@
+#!/opt/chefdk/embedded/bin/ruby
+
+require 'chef'
+require 'chef/config'
+require 'chef/rest'
+require 'chef/client'
+require 'base64'
+require 'uri'
+require 'date'
+<% if node['delivery_build']['sentry_dsn'] -%>
+require 'sentry-raven'
+
+Raven.configure do |config|
+  config.dsn = '<%= node['delivery_build']['sentry_dsn'] %>'
+end
+<% end -%>
+
+module Delivery
+  # Helper methods for our build node job runner workflow.
+  module JobHelpers
+
+    # All build nodes currently leverage a built-in internal user that
+    # all enterprises have; its name is "builder".
+    #
+    # This is my builder. There are many like it, but this is mine.
+    BUILDER_USER = "builder"
+
+    # Create appropriate authentication headers for a builder, given a
+    # job data hash. If no token is present in `job_data` (because the
+    # build nodes were updated before the server began handing tokens
+    # out), an empty set of headers is returned.
+    #
+    # @param job_data [Hash] Describes the job being run; we're
+    #   looking for a `token` key.
+    #
+    # @return [Hash] authentication headers, suitable for passing into
+    #   a `Chef::REST` call.
+    def self.builder_auth_headers(job_data)
+      if job_token = job_data["token"]
+        {"chef-delivery-token" => job_token,
+         "chef-delivery-user"  => BUILDER_USER}
+      else
+        {}
+      end
+    end
+
+  end # JobHelpers
+end # Delivery
+
+class Streamy
+  attr_accessor :output, :rest, :path, :builder_auth_headers
+
+  def initialize(rest, path, headers)
+    @rest = rest
+    @path = path
+    @builder_auth_headers = headers
+    @output = ""
+  end
+
+  def <<(arg)
+    begin
+      # Force the chef-client output into UTF-8 to prevent issues
+      # sending it to our REST API.
+      @output << arg.force_encoding('utf-8')
+      rest.post(path,
+                {
+                  "run_success" => false,
+                  "run_log" => @output,
+                  "run_status" => "running",
+                  "run_complete" => false
+                },
+                builder_auth_headers
+               )
+    rescue
+      # If we hit this block it means 1 of 2 things went wrong:
+      #    1) There was an error encoding the String
+      #    2) There was an error talking to the Delivery Server
+      #
+      # The first case, while unlikely, shouldn't cause the entire phase
+      # run to fail. We would rather have a successful phase runs without
+      # logs than a failed phase runs due to logging errors.
+      #
+      # The second case, if it happens with the request, the logs will continue
+      # to aggregate and be sent on the next attempt. If we continue to get
+      # request errors than eventually the job will time out and we will know
+      # there is something wrong with the build node or the delivery server.
+    end
+  end
+
+  def to_str
+    @output
+  end
+end
+
+<% if node['delivery_build']['sentry_dsn'] -%>
+Raven.capture do
+<% end -%>
+
+workspace_root = "<%= node['delivery_build']['root'] %>"
+workspace_bin = "<%= node['delivery_build']['bin'] %>"
+
+Chef::Config.from_file(Chef::Config.platform_specific_path("/etc/chef/client.rb"))
+client = Chef::Client.new
+client.run_ohai
+client.node_name
+
+change_file = File.join(workspace_root, 'change.json')
+raw_json = Base64.decode64(ARGV[0])
+File.open(change_file, 'w') do |file|
+  file.puts(raw_json)
+end
+
+job_data = Chef::JSONCompat.from_json(raw_json)
+
+builder_auth_headers = Delivery::JobHelpers.builder_auth_headers(job_data)
+
+rest = Chef::REST.new(job_data["delivery_api_url"])
+path = File.join(job_data['enterprise'],
+                 'orgs', job_data['organization'],
+                 'projects', job_data['project'],
+                 'pipelines', job_data['pipeline'],
+                 'phase_runs', job_data['phase_run_id'].to_s)
+
+streamy = Streamy.new(rest, path, builder_auth_headers)
+server = URI(job_data['delivery_api_url'])
+
+command_line = if job_data['stage'] == "verify"
+  "delivery job #{job_data['stage']} #{job_data['phase']} --server #{server.host} --user builder --ent #{job_data['enterprise']} --org #{job_data['organization']} --project #{job_data['project']} --for #{job_data['pipeline']} --change-id #{job_data['change_id']} --branch #{job_data['patchset_branch']} --git-url #{job_data['git_url']}"
+else
+  "delivery job #{job_data['stage']} #{job_data['phase']} --server #{server.host} --user builder --ent #{job_data['enterprise']} --org #{job_data['organization']} --project #{job_data['project']} --for #{job_data['pipeline']} --change-id #{job_data['change_id']} --shasum #{job_data['sha']} --git-url #{job_data['git_url']}"
+end
+
+https_proxy = Chef::Config[:https_proxy] || ENV['HTTPS_PROXY'] || ENV['https_proxy']
+http_proxy = Chef::Config[:http_proxy] || ENV['HTTP_PROXY'] || ENV['http_proxy']
+no_proxy = Chef::Config[:no_proxy] || ENV['NO_PROXY'] || ENV['no_proxy']
+
+cli_env = {
+  'PATH' => ['<%=DeliveryBuild::PathHelper.omnibus_chefdk_paths%>', ENV['PATH']].join(File::PATH_SEPARATOR),
+  'LC_ALL' => 'en_US.UTF-8',
+  'GIT_SSH' => File.join(workspace_bin, 'git_ssh'),
+  'HOME' => workspace_root,
+  'TERM' => 'screen-256color'
+}
+cli_env['https_proxy'] = https_proxy if https_proxy && !https_proxy.strip.empty?
+cli_env['http_proxy'] = http_proxy if http_proxy && !http_proxy.strip.empty?
+cli_env['no_proxy'] = no_proxy if no_proxy && !no_proxy.strip.empty?
+
+cmd = Mixlib::ShellOut.new("#{command_line} --no-spinner", :environment => cli_env)
+
+start_datetime = DateTime.now
+
+streamy << "Starting job on builder #{client.node_name} at #{start_datetime.iso8601}.\nCommand: #{command_line}\n"
+## This we will want to be configurable. but for now make it big and
+## and rely on pushy to timeout.
+cmd.timeout = 6600
+cmd.log_level = :error
+cmd.live_stream = streamy
+cmd.cwd = workspace_root
+cmd.run_command
+
+end_datetime = DateTime.now
+# difference between 2 DateTimes is expressed in days
+elapsed_time = ((end_datetime - start_datetime) * 24 * 60 * 60).to_i
+streamy << "\nJob ended at #{end_datetime.iso8601} (ran in #{elapsed_time} seconds)"
+
+if cmd.error?
+  rest.post(path,
+    {
+      "run_success" => false,
+      "run_log" => streamy.output,
+      "run_status" => "failed",
+      "run_complete" => true
+    },
+    builder_auth_headers
+  )
+else
+  rest.post(path,
+    {
+      "run_success" => true,
+      "run_log" => streamy.output,
+      "run_status" => "finished",
+      "run_complete" => true
+    },
+    builder_auth_headers
+  )
+end
+<% if node['delivery_build']['sentry_dsn'] -%>
+end
+<% end -%>

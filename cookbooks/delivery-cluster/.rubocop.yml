@@ -1,0 +1,26 @@
+AllCops:
+  Exclude:
+    - 'Berksfile'
+    - 'vendor/**/*'
+    - 'cookbooks/**/*'
+    - 'workspace/**/*'
+
+Metrics/MethodLength:
+  CountComments: false  # count full line comments?
+  Max: 50
+
+Metrics/ModuleLength:
+  CountComments: false
+  Max: 300
+
+Metrics/LineLength:
+  Max: 200
+
+Metrics/PerceivedComplexity:
+  Max: 15
+
+Style/CyclomaticComplexity:
+  Max: 15
+
+Metrics/AbcSize:
+  Max: 110

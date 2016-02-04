@@ -1,0 +1,21 @@
+{
+  "id": "delivery_builder_keys",
+  "delivery_pem": {
+    "encrypted_data": "On56UtcYrCAktMv0814rsGgVTwRsL8a8F990kdUPH1nH0uJqhakbM6Kq70Yd\nUGbb\n",
+    "iv": "GSFWwSwWBFHhu+u1PAwVZg==\n",
+    "version": 1,
+    "cipher": "aes-256-cbc"
+  },
+  "builder_key_pub": {
+    "encrypted_data": "+A9FlHKr/Z+w7oGYo77DqvHkqesqqoJuL8nyq5WSvEA=\n",
+    "iv": "aT9q1wvxrMqBpbCZ6kyGUA==\n",
+    "version": 1,
+    "cipher": "aes-256-cbc"
+  },
+  "builder_key": {
+    "encrypted_data": "il+fDyWBSZ1Dg4hddtZDqdyLLGFJT/skail8ajO4Y/8=\n",
+    "iv": "S+GBXHW5hDmybziHuwynfQ==\n",
+    "version": 1,
+    "cipher": "aes-256-cbc"
+  }
+}

@@ -1,0 +1,39 @@
+---
+driver:
+  name: vagrant
+  ssh:
+    insert_key: false
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: centos-6.6
+
+suites:
+<% count = 9; %W{ chef delivery analytics supermarket }.each do |name| %>
+- name: <%= name %>-server
+  run_list:
+  - recipe[delivery-cluster::default]
+  driver:
+    vm_hostname: <%= name %>-server.example.com
+    network:
+      - ['private_network', {ip: '33.33.33.<%= count+=1 %>'}]
+    customize:
+      memory: 2048
+      cpus: 2
+  attributes:
+<% end %>
+<%  (count+1).upto(16) do |i| %>
+- name: build-node<%= i-count %>
+  run_list:
+  - recipe[delivery-cluster::default]
+  driver:
+    vm_hostname: build-node<%= i-count %>.example.com
+    network:
+      - ['private_network', {ip: '33.33.33.<%= i %>'}]
+    customize:
+      memory: 1024
+      cpus: 2
+  attributes:
+<% end %>

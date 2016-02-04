@@ -1,0 +1,56 @@
+---
+driver:
+  name: vagrant
+  synced_folders:
+    - ["test/integration/default/data", "/sync_data"]
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu-12.04
+    run_list:
+      - recipe[apt::default]
+  - name: ubuntu-14.04
+    run_list:
+      - recipe[apt::default]
+  - name: ubuntu-15.04
+    run_list:
+      - recipe[apt::default]
+  - name: centos-6.7
+  - name: centos-7.1
+  - name: windows-2008r2-standard
+    attributes:
+      omnibus:
+        ruby_version: 2.1.6-x64
+      delivery_build:
+        chefdk_version: 0.7.0
+        delivery-cli:
+          artifact: https://s3-us-west-2.amazonaws.com/give-me-delivery-now/delivery-cli-0.0.0%2B20150824144123-1.exe
+          checksum: bdfbd19c7885ae42120296839f314200c724dc1d548554c812673e921673bb3f
+    driver:
+      customize:
+        memory: 4096
+      box: chef/windows-server-2008r2-standard
+
+suites:
+  - name: default
+    run_list:
+      - recipe[delivery_build::default]
+    attributes:
+      apt:
+        compile_time_update: true
+      delivery_build:
+        trusted_certs:
+          Supermarket_Cert: /sync_data/supermarket.crt
+    # the below are dummy data, generated purely for test purposes
+    encrypted_data_bag_secret_key_path: "test/integration/default/encrypted_data_bag_secret"
+    data_bags_path: "test/integration/default/data_bags"
+
+  - name: cli
+    run_list:
+      - recipe[delivery_build::cli]
+    attributes:
+      delivery_build:
+        delivery-cli:
+          options: "--nogpgcheck"

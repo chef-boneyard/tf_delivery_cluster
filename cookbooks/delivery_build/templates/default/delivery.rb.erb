@@ -1,0 +1,19 @@
+require 'chef/config'
+current_dir = File.dirname(__FILE__)
+Chef::Config.from_file("<%= @root %>/client.rb")
+<%
+  config_hash = {
+    :log_location => 'STDOUT',
+    :node_name => '"delivery"',
+    :client_key => '"#{current_dir}/delivery.pem"',
+    :trusted_certs_dir => "\"#{@root}/trusted_certs\""
+  }
+-%>
+<% config_hash.each do |config_key, value| -%>
+<%= config_key %> <%= value %>
+<% end -%>
+<% Chef::Config.keys do |config_key|
+   unless config_hash.has_key?(config_key)-%>
+<%= config_key %> <%= Chef::Config[config_key].pretty_inspect -%>
+<% end
+end -%>

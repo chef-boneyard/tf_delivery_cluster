@@ -1,0 +1,14 @@
+#!/bin/bash
+# Martin Emde
+# https://github.com/martinemde/git-ssh-wrapper
+
+unset SSH_AUTH_SOCK
+ssh -o CheckHostIP=no \
+    -o IdentitiesOnly=yes \
+    -o LogLevel=<%= node['delivery_build']['ssh_log_level'] %> \
+    -o StrictHostKeyChecking=no \
+    -o PasswordAuthentication=no \
+    -o UserKnownHostsFile=<%= node['delivery_build']['ssh_known_hosts_file'] %> \
+    -o IdentityFile=<%= node['delivery_build']['ssh_key'] %> \
+    -l <%= node['delivery_build']['ssh_user'] %> \
+    $*

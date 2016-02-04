@@ -1,0 +1,22 @@
+{
+  "version": "2",
+  "build_cookbook": {
+    "name": "build",
+    "path": ".delivery/build"
+  },
+  "delivery-truck": {
+    "publish": {
+      "github": "chef-cookbooks/delivery-cluster"
+    }
+  },
+  "skip_phases": [
+    "security",
+    "quality",
+    "publish"
+  ],
+  "build_nodes": {
+    "provision": ["name:builder-*-2.delivery.chef.co AND platform_version:14.04"],
+    "deploy": ["name:builder-*-2.delivery.chef.co AND platform_version:14.04"],
+    "functional": ["name:builder* AND platform_version:14.04 NOT name:builder-*-2.delivery.chef.co"]
+  }
+}

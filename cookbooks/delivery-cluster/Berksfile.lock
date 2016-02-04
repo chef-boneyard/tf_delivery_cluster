@@ -1,0 +1,73 @@
+DEPENDENCIES
+  chef-ingredient
+    git: https://github.com/chef-cookbooks/chef-ingredient.git
+    revision: 245944aea3c6870aed60e97f7b5d94ff035640d8
+  chef-server-12
+    path: vendor/chef-server-12
+  chef-splunk
+    git: https://github.com/chef-cookbooks/chef-splunk.git
+    revision: 97dddd18fb90aae82b2649d8df8c8f47b0eb828c
+  delivery-base
+    git: https://github.com/chef-cookbooks/delivery-base.git
+    revision: 5f17ebe8fd2be9f345bbfb125084122fe81d4468
+  delivery-cluster
+    path: .
+    metadata: true
+  delivery_build
+    git: https://github.com/chef-cookbooks/delivery_build.git
+    revision: 0cf08c7e47af5c2616a6c18d82f1882380c622a8
+  hostsfile
+
+GRAPH
+  apt (2.9.2)
+  apt-chef (0.2.0)
+    apt (>= 0.0.0)
+  build-essential (2.2.4)
+  chef-ingredient (0.15.0)
+    apt-chef (>= 0.2.0)
+    yum-chef (>= 0.2.0)
+  chef-server-12 (0.1.9)
+    chef-ingredient (>= 0.0.0)
+    hostsfile (>= 0.0.0)
+  chef-splunk (1.4.0)
+    chef-vault (>= 1.0.4)
+  chef-sugar (3.1.1)
+  chef-vault (1.3.2)
+  chef_handler (1.2.0)
+  delivery-base (0.1.0)
+    push-jobs (>= 0.0.0)
+  delivery-cluster (0.5.13)
+    apt (>= 0.0.0)
+    chef-ingredient (>= 0.0.0)
+    chef-server-12 (>= 0.0.0)
+    chef-splunk (>= 0.0.0)
+    delivery_build (>= 0.0.0)
+    git (>= 0.0.0)
+    yum (>= 0.0.0)
+  delivery_build (0.4.9)
+    build-essential (>= 0.0.0)
+    chef-ingredient (>= 0.0.0)
+    chef-sugar (>= 0.0.0)
+    delivery-base (>= 0.0.0)
+    git (>= 0.0.0)
+  dmg (2.3.0)
+  git (4.3.4)
+    build-essential (>= 0.0.0)
+    dmg (>= 0.0.0)
+    windows (>= 0.0.0)
+    yum-epel (>= 0.0.0)
+  hostsfile (2.4.5)
+  packagecloud (0.1.0)
+  push-jobs (2.6.3)
+    chef-ingredient (>= 0.0.0)
+    runit (>= 0.0.0)
+    windows (>= 0.0.0)
+  runit (1.7.4)
+    packagecloud (>= 0.0.0)
+  windows (1.38.3)
+    chef_handler (>= 0.0.0)
+  yum (3.8.2)
+  yum-chef (0.2.1)
+    yum (>= 3.2)
+  yum-epel (0.6.4)
+    yum (~> 3.2)
