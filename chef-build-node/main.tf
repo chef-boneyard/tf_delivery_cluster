@@ -1,8 +1,22 @@
-# Create the data bag to store our builder keys
-resource "chef_role" "delivery-build-node" {
-  name = "delivery-build-node"
-  run_list = ["recipe[delivery_build]"]
-}
+# TODO: Uncommented out when we can orchestrate with depends_on
+#
+# Sadly I haven't figured out how to do the orchestration between modules
+# because if we dont add `depends_on` they run in parallel and we are not
+# ready yet to run these resources since the chef-server is not up.
+#
+# Configure the Chef Server
+# provider "chef" {
+#    server_url = "${var.chef-server-url}/"
+#    client_name = "delivery"
+#    private_key_pem = "${file(".chef/delivery.pem")}"
+#    allow_unverified_ssl = true
+# }
+# # Create the data bag to store our builder keys
+# resource "chef_role" "delivery-build-node" {
+#   depends_on = ["null_resource.verify_config"]
+#   name = "delivery-build-node"
+#   run_list = ["recipe[delivery_build]"]
+# }
 
 # Setup chef-build-node
 resource "aws_instance" "chef-build-node" {
@@ -22,7 +36,7 @@ resource "aws_instance" "chef-build-node" {
     user = "${var.user}"
     key_fle = "${var.private_key_path}"
   }
-  depends_on = ["chef_role.delivery-build-node"]
+  # depends_on = ["chef_role.delivery-build-node"]
 
   # For now there is no way to delete the node from the chef-server
   # and also there is no way to customize your `destroy` actions
@@ -35,6 +49,12 @@ resource "aws_instance" "chef-build-node" {
     knife node delete ${format("chef-build-node-%02d", count.index + 1)} -y
     echo 'ugly'
 EOF
+  }
+
+  # TODO: Find a way to don't do that just to create dependencies between Modules
+  # because this is really ugly... :/
+  provisioner "local-exec" {
+    command = "echo '${var.delivery_builder_keys}'"
   }
 
   # Copies certificates
@@ -68,7 +88,7 @@ EOF
     # Perhaps we want to install chefdk on the build-nodes
     # if so, we can skip the chef-client install
     # skip_install = true
-    run_list = ["role[delivery-build-node]"]
+    run_list = ["delivery_build"]
     node_name = "${format("chef-build-node-%02d", count.index + 1)}"
     secret_key = "${file(".chef/encrypted_data_bag_secret")}"
     server_url = "${var.chef-server-url}"

@@ -1,3 +1,35 @@
+# TODO: Uncommented out when we can orchestrate with depends_on
+#
+# Sadly I haven't figured out how to do the orchestration between modules
+# because if we dont add `depends_on` they run in parallel and we are not
+# ready yet to run these resources since the chef-server is not up.
+#
+# Configure the Chef Server
+# provider "chef" {
+#    server_url = "${var.chef-server-url}/"
+#    client_name = "delivery"
+#    private_key_pem = "${file(".chef/delivery.pem")}"
+#    allow_unverified_ssl = true
+# }
+
+# Create the data bag to store our builder keys
+# resource "chef_data_bag" "keys" {
+#   depends_on = ["null_resource.something?"]
+#   name = "keys"
+# }
+
+# TODO: How to create encrypted_items?
+# Workaround: Use knife - look below at the "${template_file.delivery_builder_keys}"
+# resource "chef_data_bag_item" "delivery_builder_keys" {
+#     data_bag_name = "keys"
+#     content_json = <<EOT
+# {
+#   "builder_key":  "${file(".chef/encrypted_data_bag_secret")}",
+#   "delivery_pem": "${file(".chef/delivery.pem")}"
+# }
+# EOT
+# }
+
 # Generate builder_key
 resource "null_resource" "generate_builder_key" {
   # Currently there is no way to delay the action of reading a file,
@@ -24,23 +56,6 @@ resource "template_file" "encrypted_data_bag_secret" {
     command = "echo '${base64encode("${template_file.encrypted_data_bag_secret.rendered}")}' > .chef/encrypted_data_bag_secret"
   }
 }
-
-# Create the data bag to store our builder keys
-resource "chef_data_bag" "keys" {
-  name = "keys"
-}
-
-# TODO: How to create encrypted_items?
-# Workaround: Use knife - look below at the "${template_file.delivery_builder_keys}"
-# resource "chef_data_bag_item" "delivery_builder_keys" {
-#     data_bag_name = "keys"
-#     content_json = <<EOT
-# {
-#   "builder_key":  "${file(".chef/encrypted_data_bag_secret")}",
-#   "delivery_pem": "${file(".chef/delivery.pem")}"
-# }
-# EOT
-# }
 
 # Setup chef-delivery
 resource "aws_instance" "chef-delivery" {
@@ -79,6 +94,11 @@ EOF
   provisioner "file" {
     source = ".chef"
     destination = "/tmp"
+  }
+
+  # Create the data-bag keys
+  provisioner "local-exec" {
+    command = "knife data bag create keys"
   }
 
   # Configure license and files
