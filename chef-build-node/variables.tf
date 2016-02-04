@@ -7,3 +7,5 @@ variable "subnet_id" {}
 variable "user" {}
 variable "private_key_path" {}
 variable "chef-server-url" {}
+variable "delivery_builder_keys" {}
+variable "enterprise" {}

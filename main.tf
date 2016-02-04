@@ -27,14 +27,6 @@ module "chef-server" {
   organization = "${var.chef-server-organization}"
 }
 
-# Configure the Chef Server
-provider "chef" {
-   server_url = "${module.chef-server.chef-server-url}/"
-   client_name = "delivery"
-   private_key_pem = "${file(".chef/delivery.pem")}"
-   allow_unverified_ssl = true
-}
-
 # Setup Chef Delivery
 module "chef-delivery" {
   source = "./chef-delivery"
@@ -63,6 +55,9 @@ module "chef-build-node" {
   user = "${var.aws_ami_user}"
   private_key_path = ".keys/${var.aws_key_pair_name}.pem"
   chef-server-url = "${module.chef-server.chef-server-url}"
+  delivery_builder_keys = "${module.chef-delivery.delivery_builder_keys}"
+  # Maybe be this will create a dependency
+  enterprise = "${module.chef-delivery.chef-delivery-enterprise}"
 }
 
 # Setup Chef Supermarket
