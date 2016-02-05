@@ -72,7 +72,8 @@ Here a gist with the ouput of the process: https://gist.github.com/afiune/fdabdb
 
 LICENSE AND AUTHORS
 ===================
-- Author: Salim Afiune (<afiune@chef.io>)
+* [Salim Afiune](https://github.com/afiune)
+* [Brian Menges](https://github.com/mengesb)
 
 ```text
 Copyright:: 2015 Chef Software, Inc
