@@ -14,7 +14,7 @@ resource "aws_instance" "chef-server" {
   }
   connection {
     user = "${var.user}"
-    key_fle = "${var.private_key_path}"
+    key_file = "${var.private_key_path}"
   }
 
   # Copies all cookbooks that we need to trigger a chef-zero
@@ -81,4 +81,3 @@ resource "template_file" "knife_rb" {
     command = "knife cookbook upload --all --cookbook-path cookbooks"
   }
 }
-
