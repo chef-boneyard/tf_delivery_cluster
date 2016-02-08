@@ -34,7 +34,7 @@ resource "aws_instance" "chef-build-node" {
   }
   connection {
     user = "${var.user}"
-    key_fle = "${var.private_key_path}"
+    key_file = "${var.private_key_path}"
   }
   # depends_on = ["chef_role.delivery-build-node"]
 
