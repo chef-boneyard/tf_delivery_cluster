@@ -14,7 +14,7 @@ resource "aws_instance" "chef-server" {
   }
   connection {
     user = "${var.user}"
-    key_file = "${var.private_key_path}"
+    private_key = "${var.private_key_path}"
   }
 
   # Copies all cookbooks that we need to trigger a chef-zero
