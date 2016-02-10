@@ -73,7 +73,7 @@ resource "aws_instance" "chef-delivery" {
   }
   connection {
     user = "${var.user}"
-    key_file = "${var.private_key_path}"
+    private_key = "${var.private_key_path}"
   }
   depends_on = ["null_resource.generate_builder_key", "template_file.encrypted_data_bag_secret"]
 
