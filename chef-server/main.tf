@@ -64,7 +64,7 @@ EOF
 
 # Template to render knife.rb
 resource "template_file" "knife_rb" {
-  template = "${file("chef-server/templates/knife_rb.tpl")}"
+  template = "${file("${path.module}/templates/knife_rb.tpl")}"
   vars {
     chef-server-fqdn = "${aws_instance.chef-server.public_ip}"
     organization = "${var.organization}"

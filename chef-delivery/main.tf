@@ -154,7 +154,7 @@ EOF
 # Template to render delivery_builder_keys item
 resource "template_file" "delivery_builder_keys" {
   depends_on = ["null_resource.generate_builder_key", "template_file.encrypted_data_bag_secret"]
-  template = "${file("chef-delivery/templates/delivery_builder_keys.tpl")}"
+  template = "${file("${path.module}/templates/delivery_builder_keys.tpl")}"
   vars {
     builder_key = "${replace(file(".chef/builder_key"), "/\n/", "\\\\n")}"
     delivery_pem = "${replace(file(".chef/delivery.pem"), "/\n/", "\\\\n")}"
