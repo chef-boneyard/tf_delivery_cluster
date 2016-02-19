@@ -1,3 +1,6 @@
+output "vpc_id" {
+  value = "${aws_vpc.terraform-delivery-cluster.id}"
+}
 output "subnet_id" {
   value = "${aws_subnet.terraform-delivery-cluster.id}"
 }
