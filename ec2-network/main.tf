@@ -6,19 +6,19 @@ resource "aws_vpc" "terraform-delivery-cluster" {
   enable_dns_support = true
   enable_dns_hostnames = true
   tags = {
-    Name = "Terraform Delivery Cluster VPC"
+    Name = "${var.cluster_name} VPC"
   }
 }
 resource "aws_internet_gateway" "terraform-delivery-cluster-gw" {
   vpc_id = "${aws_vpc.terraform-delivery-cluster.id}"
   tags = {
-    Name = "Terraform Delivery Cluster Gateway"
+    Name = "${var.cluster_name} Gateway"
   }
 }
 resource "aws_route_table" "internet" {
   vpc_id = "${aws_vpc.terraform-delivery-cluster.id}"
   tags = {
-    Name = "Terraform Delivery Cluster Routes"
+    Name = "${var.cluster_name} Routes"
   }
 }
 resource "aws_route" "internet" {
@@ -31,7 +31,7 @@ resource "aws_subnet" "terraform-delivery-cluster" {
   cidr_block = "${lookup(var.aws_cidrs, "subnet")}"
   map_public_ip_on_launch = true
   tags = {
-    Name = "Terraform Delivery Cluster Subnet"
+    Name = "${var.cluster_name} Subnet"
   }
 }
 resource "aws_route_table_association" "internet-access" {

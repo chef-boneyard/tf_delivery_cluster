@@ -4,3 +4,7 @@ variable "aws_cidrs" {
     subnet  = "10.10.1.0/24"
   }
 }
+
+variable "cluster_name" {
+  default = "Terraform Delivery Cluster"
+}
