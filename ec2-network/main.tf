@@ -143,10 +143,10 @@ resource "aws_security_group_rule" "chef-server_allow_all_chef-compliance" {
   security_group_id = "${aws_security_group.chef-server.id}"
 }
 # Egress: ALL
-resource "aws_security_group_rule" "chef-server_allow_0-65535_all" {
+resource "aws_security_group_rule" "chef-server_allow_all" {
   type = "egress"
   from_port = 0
-  to_port = 65535
+  to_port = 0
   protocol = "-1"
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.chef-server.id}"
@@ -217,10 +217,10 @@ resource "aws_security_group_rule" "chef-analytics_allow_all_chef-compliance" {
   security_group_id = "${aws_security_group.chef-analytics.id}"
 }
 # Egress: ALL
-resource "aws_security_group_rule" "chef-analytics_allow_0-65535_all" {
+resource "aws_security_group_rule" "chef-analytics_allow_all" {
   type = "egress"
   from_port = 0
-  to_port = 65535
+  to_port = 0
   protocol = "-1"
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.chef-analytics.id}"
@@ -264,10 +264,10 @@ resource "aws_security_group_rule" "chef-compliance_allow_all_chef-server" {
   security_group_id = "${aws_security_group.chef-compliance.id}"
 }
 # Egress: ALL
-resource "aws_security_group_rule" "chef-compliance_allow_0-65535_all" {
+resource "aws_security_group_rule" "chef-compliance_allow_all" {
   type = "egress"
   from_port = 0
-  to_port = 65535
+  to_port = 0
   protocol = "-1"
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.chef-compliance.id}"
@@ -329,10 +329,10 @@ resource "aws_security_group_rule" "chef-supermarket_allow_all_chef-delivery" {
   security_group_id = "${aws_security_group.chef-supermarket.id}"
 }
 # Egress: ALL
-resource "aws_security_group_rule" "chef-supermarket_allow_0-65535_all" {
+resource "aws_security_group_rule" "chef-supermarket_allow_all" {
   type = "egress"
   from_port = 0
-  to_port = 65535
+  to_port = 0
   protocol = "-1"
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.chef-supermarket.id}"
@@ -413,10 +413,10 @@ resource "aws_security_group_rule" "chef-delivery_allow_all_chef-build-node" {
   security_group_id = "${aws_security_group.chef-delivery.id}"
 }
 # Egress: ALL
-resource "aws_security_group_rule" "chef-delivery_allow_0-65535_all" {
+resource "aws_security_group_rule" "chef-delivery_allow_all" {
   type = "egress"
   from_port = 0
-  to_port = 65535
+  to_port = 0
   protocol = "-1"
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.chef-delivery.id}"
@@ -460,10 +460,10 @@ resource "aws_security_group_rule" "chef-build-node_allow_all_chef-delivery" {
   security_group_id = "${aws_security_group.chef-build-node.id}"
 }
 # Egress: ALL
-resource "aws_security_group_rule" "chef-build-node_allow_0-65535_all" {
+resource "aws_security_group_rule" "chef-build-node_allow_all" {
   type = "egress"
   from_port = 0
-  to_port = 65535
+  to_port = 0
   protocol = "-1"
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.chef-build-node.id}"
