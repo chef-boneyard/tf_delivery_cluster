@@ -1,4 +1,13 @@
 # `tf_delivery_cluster`
+
+**Umbrella Project**: [Automate](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-automate.md)
+
+**Project State**: [Deprecated](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md#deprecated)
+
+**Issues [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: None
+
+**Pull Request [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: None
+
 A Terraform plan to install and configure Chef Delivery and its components:
 
 * Chef Server 12
